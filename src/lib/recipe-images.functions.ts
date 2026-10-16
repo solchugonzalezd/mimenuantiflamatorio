@@ -26,7 +26,7 @@ export const generateRecipeImage = createServerFn({ method: "POST" })
 
     const prompt = `Fotografía gastronómica realista, vista cenital 3/4, luz natural suave, de un plato casero saludable: "${r.name}". ${ings ? `Ingredientes visibles: ${ings}.` : ""} Vajilla rústica de cerámica, mantel de lino crema, fondo beige cálido, algunas hierbas frescas. Sin texto, sin personas, sin marcas.`;
 
-    const apiKey = process.env.LOVABLE_API_KEY;
+    const apiKey = process.env['LOVABLE_API_KEY'];
     if (!apiKey) throw new Error("Falta configuración de IA");
     const res = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
       method: "POST",
