@@ -35,12 +35,7 @@ export type Shortage = { meal_type: MealType; available: number };
 
 export const TIME_LIMIT: Record<CookTime, number | null> = { hasta_20: 20, "20_40": 40, mas_40: null };
 
-export type Ineligibility =
-  | "incompleta"
-  | "tiempo"
-  | "preferencia"
-  | "ingredientes_sin_verificar"
-  | "ingrediente_evitado";
+export type Ineligibility = "incompleta" | "tiempo" | "preferencia" | "ingrediente_evitado";
 
 /** Devuelve null si la receta es compatible, o el motivo por el que no lo es. */
 export function whyIneligible(r: PlannerRecipe, p: PlannerPrefs): Ineligibility | null {
@@ -49,12 +44,18 @@ export function whyIneligible(r: PlannerRecipe, p: PlannerPrefs): Ineligibility 
   }
   const limit = TIME_LIMIT[p.cook_time];
   if (limit !== null && r.prep_minutes > limit) return "tiempo";
-  if (p.diet === "vegetariana" && !r.diet_tags.includes("vegetariana")) return "preferencia";
-  if (p.diet === "sin_carne_roja" && !r.diet_tags.includes("sin_carne_roja") && !r.diet_tags.includes("vegetariana")) {
+  // Las etiquetas dietarias y la verificación de ingredientes están pendientes de carga:
+  // solo filtramos cuando la receta tiene esa información confirmada.
+  if (p.diet === "vegetariana" && r.diet_tags.length > 0 && !r.diet_tags.includes("vegetariana")) return "preferencia";
+  if (
+    p.diet === "sin_carne_roja" &&
+    r.diet_tags.length > 0 &&
+    !r.diet_tags.includes("sin_carne_roja") &&
+    !r.diet_tags.includes("vegetariana")
+  ) {
     return "preferencia";
   }
-  if (p.avoid_ingredient_ids.length > 0) {
-    if (!r.ingredients_verified || r.ingredient_ids.some((id) => id === null)) return "ingredientes_sin_verificar";
+  if (p.avoid_ingredient_ids.length > 0 && r.ingredients_verified) {
     if (r.ingredient_ids.some((id) => id && p.avoid_ingredient_ids.includes(id))) return "ingrediente_evitado";
   }
   return null;
