@@ -23,7 +23,7 @@ function Opt({ active, onClick, title, desc }: { active: boolean; onClick: () =>
   );
 }
 
-export function Onboarding() {
+export function Onboarding({ onClose }: { onClose?: () => void }) {
   const uid = useUid();
   const invalidate = useInvalidate();
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ export function Onboarding() {
   }
 
   return (
-    <Dialog open>
+    <Dialog open onOpenChange={(o) => !o && onClose?.()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto [&>button]:hidden" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
           <p className="text-xs uppercase tracking-wider text-muted-foreground">Paso {step + 1} de 2</p>
@@ -78,7 +78,11 @@ export function Onboarding() {
           )}
         </div>
         <div className="flex justify-between gap-2 pt-2">
-          <Button variant="ghost" onClick={() => setStep((s) => s - 1)} disabled={step === 0 || busy}>Atrás</Button>
+          {step === 0 && onClose ? (
+            <Button variant="ghost" onClick={onClose}>Más tarde</Button>
+          ) : (
+            <Button variant="ghost" onClick={() => setStep((s) => s - 1)} disabled={step === 0 || busy}>Atrás</Button>
+          )}
           {step < 1 ? (
             <Button onClick={() => setStep((s) => s + 1)}>Siguiente</Button>
           ) : (

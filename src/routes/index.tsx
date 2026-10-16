@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CalendarDays, BookOpen, ShoppingBasket, Heart, Settings2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -37,6 +37,7 @@ function Index() {
 
 function Home() {
   const plan = useCurrentPlan();
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const prefs = usePrefs();
   const recipes = useRecipes();
   const todayIdx = (new Date().getDay() + 6) % 7;
@@ -47,7 +48,7 @@ function Home() {
 
   return (
     <div className="space-y-8">
-      {!prefs.isLoading && prefs.isFetched && !prefs.data && <Onboarding />}
+      {showOnboarding && <Onboarding onClose={() => setShowOnboarding(false)} />}
       {prefs.data && (
         <Link to="/perfil" className="card-soft flex items-center justify-between gap-3 p-4 text-sm hover:bg-accent">
           <span>
@@ -72,9 +73,9 @@ function Home() {
             </Button>
           </div>
           {!prefs.isLoading && !prefs.data && (
-            <Link to="/perfil" className="mt-5 inline-flex items-center gap-2 text-sm text-primary underline-offset-4 hover:underline">
-              <Settings2 className="h-4 w-4" /> Primero contanos tus preferencias
-            </Link>
+            <button onClick={() => setShowOnboarding(true)} className="mt-5 inline-flex items-center gap-2 text-sm text-primary underline-offset-4 hover:underline">
+              <Settings2 className="h-4 w-4" /> Configurar mi semana
+            </button>
           )}
         </div>
         <img src={hero} alt="" className="hidden h-full w-full object-cover md:block" width={1600} height={1008} />
