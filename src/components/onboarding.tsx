@@ -25,24 +25,22 @@ function Opt({ active, onClick, title, desc }: { active: boolean; onClick: () =>
 
 export function Onboarding() {
   const uid = useUid();
-  const diets = useDietOptions();
   const invalidate = useInvalidate();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [cookTime, setCookTime] = useState<CookTime>("hasta_20");
   const [meals, setMeals] = useState<MealType[]>(["almuerzo", "cena"]);
-  const [diet, setDiet] = useState("variada");
   const [busy, setBusy] = useState(false);
 
   async function finish() {
     if (!uid) return;
     setBusy(true);
     try {
-      const prefs = { user_id: uid, cook_time: cookTime, diet, diet_other: null, meals, avoid_ingredient_ids: [] as string[], updated_at: new Date().toISOString() };
+      const prefs = { user_id: uid, cook_time: cookTime, diet: "variada", diet_other: null, meals, avoid_ingredient_ids: [] as string[], updated_at: new Date().toISOString() };
       const { error } = await supabase.from("user_preferences").upsert(prefs);
       if (error) throw error;
       const recipes = await fetchPlannerRecipes();
-      const result = generatePlan(recipes, { cook_time: cookTime, diet, meals, avoid_ingredient_ids: [] });
+      const result = generatePlan(recipes, { cook_time: cookTime, diet: "variada", meals, avoid_ingredient_ids: [] });
       await supabase.from("meal_plans").update({ is_current: false }).eq("user_id", uid).eq("is_current", true);
       const { data: plan, error: e1 } = await supabase.from("meal_plans").insert({ user_id: uid, week_start: mondayOf(), is_current: true }).select("id").single();
       if (e1) throw e1;
@@ -62,9 +60,9 @@ export function Onboarding() {
     <Dialog open>
       <DialogContent className="max-h-[90vh] overflow-y-auto [&>button]:hidden" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
-          <p className="text-xs uppercase tracking-wider text-muted-foreground">Paso {step + 1} de 3</p>
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">Paso {step + 1} de 2</p>
           <DialogTitle className="text-2xl">
-            {step === 0 ? "¿Cuánto tiempo tenés para cocinar?" : step === 1 ? "¿Qué comidas querés organizar?" : "¿Cómo te alimentás?"}
+            {step === 0 ? "¿Cuánto tiempo tenés para cocinar?" : "¿Qué comidas querés organizar?"}
           </DialogTitle>
           <DialogDescription>Con esto armamos tu semana. Lo podés cambiar cuando quieras.</DialogDescription>
         </DialogHeader>
