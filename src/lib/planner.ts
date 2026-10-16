@@ -6,7 +6,7 @@ export type CookTime = "hasta_20" | "20_40" | "mas_40";
 export const MEAL_LABELS: Record<MealType, string> = {
   desayuno: "Desayuno",
   almuerzo: "Almuerzo",
-  merienda: "Merienda",
+  merienda: "Colaciones",
   cena: "Cena",
 };
 export const MEAL_ORDER: MealType[] = ["desayuno", "almuerzo", "merienda", "cena"];
