@@ -19,6 +19,9 @@ import { Route as AuthenticatedFavoritosRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminCategoriasRouteImport } from './routes/_authenticated/admin.categorias'
+import { Route as AuthenticatedAdminImportarRouteImport } from './routes/_authenticated/admin.importar'
+import { Route as AuthenticatedAdminUsuariasRouteImport } from './routes/_authenticated/admin.usuarias'
 import { Route as AuthenticatedRecetasIndexRouteImport } from './routes/_authenticated/recetas.index'
 import { Route as AuthenticatedRecetasIdRouteImport } from './routes/_authenticated/recetas.$id'
 import { Route as AuthenticatedAdminRecetasIdRouteImport } from './routes/_authenticated/admin.recetas.$id'
@@ -72,6 +75,24 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminCategoriasRoute =
+  AuthenticatedAdminCategoriasRouteImport.update({
+    id: '/categorias',
+    path: '/categorias',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminImportarRoute =
+  AuthenticatedAdminImportarRouteImport.update({
+    id: '/importar',
+    path: '/importar',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminUsuariasRoute =
+  AuthenticatedAdminUsuariasRouteImport.update({
+    id: '/usuarias',
+    path: '/usuarias',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedRecetasIndexRoute =
   AuthenticatedRecetasIndexRouteImport.update({
     id: '/recetas/',
@@ -99,6 +120,9 @@ export interface FileRoutesByFullPath {
   '/favoritos': typeof AuthenticatedFavoritosRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/plan': typeof AuthenticatedPlanRoute
+  '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/admin/importar': typeof AuthenticatedAdminImportarRoute
+  '/admin/usuarias': typeof AuthenticatedAdminUsuariasRoute
   '/recetas/$id': typeof AuthenticatedRecetasIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/recetas/': typeof AuthenticatedRecetasIndexRoute
@@ -112,6 +136,9 @@ export interface FileRoutesByTo {
   '/favoritos': typeof AuthenticatedFavoritosRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/plan': typeof AuthenticatedPlanRoute
+  '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/admin/importar': typeof AuthenticatedAdminImportarRoute
+  '/admin/usuarias': typeof AuthenticatedAdminUsuariasRoute
   '/recetas/$id': typeof AuthenticatedRecetasIdRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/recetas': typeof AuthenticatedRecetasIndexRoute
@@ -128,6 +155,9 @@ export interface FileRoutesById {
   '/_authenticated/favoritos': typeof AuthenticatedFavoritosRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
+  '/_authenticated/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/_authenticated/admin/importar': typeof AuthenticatedAdminImportarRoute
+  '/_authenticated/admin/usuarias': typeof AuthenticatedAdminUsuariasRoute
   '/_authenticated/recetas/$id': typeof AuthenticatedRecetasIdRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/recetas/': typeof AuthenticatedRecetasIndexRoute
@@ -144,6 +174,9 @@ export interface FileRouteTypes {
     | '/favoritos'
     | '/perfil'
     | '/plan'
+    | '/admin/categorias'
+    | '/admin/importar'
+    | '/admin/usuarias'
     | '/recetas/$id'
     | '/admin/'
     | '/recetas/'
@@ -157,6 +190,9 @@ export interface FileRouteTypes {
     | '/favoritos'
     | '/perfil'
     | '/plan'
+    | '/admin/categorias'
+    | '/admin/importar'
+    | '/admin/usuarias'
     | '/recetas/$id'
     | '/admin'
     | '/recetas'
@@ -172,6 +208,9 @@ export interface FileRouteTypes {
     | '/_authenticated/favoritos'
     | '/_authenticated/perfil'
     | '/_authenticated/plan'
+    | '/_authenticated/admin/categorias'
+    | '/_authenticated/admin/importar'
+    | '/_authenticated/admin/usuarias'
     | '/_authenticated/recetas/$id'
     | '/_authenticated/admin/'
     | '/_authenticated/recetas/'
@@ -257,6 +296,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/categorias': {
+      id: '/_authenticated/admin/categorias'
+      path: '/categorias'
+      fullPath: '/admin/categorias'
+      preLoaderRoute: typeof AuthenticatedAdminCategoriasRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/importar': {
+      id: '/_authenticated/admin/importar'
+      path: '/importar'
+      fullPath: '/admin/importar'
+      preLoaderRoute: typeof AuthenticatedAdminImportarRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/usuarias': {
+      id: '/_authenticated/admin/usuarias'
+      path: '/usuarias'
+      fullPath: '/admin/usuarias'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariasRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/recetas/': {
       id: '/_authenticated/recetas/'
       path: '/recetas'
@@ -282,11 +342,17 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminCategoriasRoute: typeof AuthenticatedAdminCategoriasRoute
+  AuthenticatedAdminImportarRoute: typeof AuthenticatedAdminImportarRoute
+  AuthenticatedAdminUsuariasRoute: typeof AuthenticatedAdminUsuariasRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminRecetasIdRoute: typeof AuthenticatedAdminRecetasIdRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminCategoriasRoute: AuthenticatedAdminCategoriasRoute,
+  AuthenticatedAdminImportarRoute: AuthenticatedAdminImportarRoute,
+  AuthenticatedAdminUsuariasRoute: AuthenticatedAdminUsuariasRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminRecetasIdRoute: AuthenticatedAdminRecetasIdRoute,
 }
