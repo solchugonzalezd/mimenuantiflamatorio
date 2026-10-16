@@ -13,7 +13,8 @@ const NAV = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { isAdmin } = useAuth();
+  const { isAdmin, session } = useAuth();
+  const isGuest = session?.user.is_anonymous ?? true;
   const navigate = useNavigate();
   return (
     <div className="min-h-screen pb-24 md:pb-0">
@@ -44,16 +45,16 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link to="/perfil" className="rounded-full p-2 text-muted-foreground hover:bg-accent" aria-label="Mi perfil">
               <User className="h-5 w-5" />
             </Link>
-            <button
+            {!isGuest && <button
               onClick={async () => {
                 await supabase.auth.signOut();
-                navigate({ to: "/auth" });
+                navigate({ to: "/", replace: true });
               }}
               className="rounded-full p-2 text-muted-foreground hover:bg-accent"
               aria-label="Cerrar sesión"
             >
               <LogOut className="h-5 w-5" />
-            </button>
+            </button>}
           </div>
         </div>
       </header>

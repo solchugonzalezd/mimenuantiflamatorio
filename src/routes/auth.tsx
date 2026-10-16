@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,10 +10,10 @@ import hero from "@/assets/hero.jpg";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Ingresar · Método Menú Antiinflamatorio" },
-      { name: "description", content: "Ingresá a tu cuenta para organizar tu semana de comidas." },
-      { property: "og:title", content: "Ingresar · Método Menú Antiinflamatorio" },
-      { property: "og:description", content: "Ingresá a tu cuenta para organizar tu semana de comidas." },
+      { title: "Administración · Método Menú Antiinflamatorio" },
+      { name: "description", content: "Acceso privado al panel de administración." },
+      { property: "og:title", content: "Administración · Método Menú Antiinflamatorio" },
+      { property: "og:description", content: "Acceso privado al panel de administración." },
     ],
   }),
   component: AuthPage,
@@ -33,10 +32,10 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/" });
+      if (data.session && !data.session.user.is_anonymous) navigate({ to: "/admin" });
     });
     const { data } = supabase.auth.onAuthStateChange((e, s) => {
-      if (e === "SIGNED_IN" && s) navigate({ to: "/" });
+      if (e === "SIGNED_IN" && s && !s.user.is_anonymous) navigate({ to: "/admin" });
     });
     return () => data.subscription.unsubscribe();
   }, [navigate]);
@@ -71,10 +70,6 @@ function AuthPage() {
     }
   }
 
-  async function google() {
-    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (r.error) toast.error("No pudimos ingresar con Google");
-  }
 
   return (
     <div className="grid min-h-screen md:grid-cols-2">
@@ -88,8 +83,8 @@ function AuthPage() {
             Antiinflamatorio
           </h1>
           <p className="mt-3 text-muted-foreground">
-            {mode === "login" && "Ingresá para organizar tu semana."}
-            {mode === "signup" && "Creá tu cuenta con el correo que usaste en la compra."}
+            {mode === "login" && "Acceso solo para administración. Las usuarias entran directo, sin cuenta."}
+            {mode === "signup" && "La primera cuenta creada queda como administradora."}
             {mode === "forgot" && "Te mandamos un enlace para recuperar el acceso."}
           </p>
 
@@ -116,11 +111,7 @@ function AuthPage() {
               <Button type="submit" className="w-full" size="lg" disabled={busy}>
                 {mode === "login" ? "Ingresar" : mode === "signup" ? "Crear cuenta" : "Enviar enlace"}
               </Button>
-              {mode !== "forgot" && (
-                <Button type="button" variant="outline" className="w-full" size="lg" onClick={google}>
-                  Continuar con Google
-                </Button>
-              )}
+
             </form>
           )}
 

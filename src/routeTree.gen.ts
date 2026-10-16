@@ -13,12 +13,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedFavoritosRouteImport } from './routes/_authenticated/favoritos'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedRecetasIndexRouteImport } from './routes/_authenticated/recetas.index'
 import { Route as AuthenticatedRecetasIdRouteImport } from './routes/_authenticated/recetas.$id'
+import { Route as AuthenticatedAdminRecetasIdRouteImport } from './routes/_authenticated/admin.recetas.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -38,6 +41,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedComprasRoute = AuthenticatedComprasRouteImport.update({
   id: '/compras',
@@ -59,6 +67,11 @@ const AuthenticatedPlanRoute = AuthenticatedPlanRouteImport.update({
   path: '/plan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedRecetasIndexRoute =
   AuthenticatedRecetasIndexRouteImport.update({
     id: '/recetas/',
@@ -70,17 +83,26 @@ const AuthenticatedRecetasIdRoute = AuthenticatedRecetasIdRouteImport.update({
   path: '/recetas/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRecetasIdRoute =
+  AuthenticatedAdminRecetasIdRouteImport.update({
+    id: '/recetas/$id',
+    path: '/recetas/$id',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/compras': typeof AuthenticatedComprasRoute
   '/favoritos': typeof AuthenticatedFavoritosRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/recetas/$id': typeof AuthenticatedRecetasIdRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/recetas/': typeof AuthenticatedRecetasIndexRoute
+  '/admin/recetas/$id': typeof AuthenticatedAdminRecetasIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,7 +113,9 @@ export interface FileRoutesByTo {
   '/perfil': typeof AuthenticatedPerfilRoute
   '/plan': typeof AuthenticatedPlanRoute
   '/recetas/$id': typeof AuthenticatedRecetasIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/recetas': typeof AuthenticatedRecetasIndexRoute
+  '/admin/recetas/$id': typeof AuthenticatedAdminRecetasIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,12 +123,15 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/favoritos': typeof AuthenticatedFavoritosRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/recetas/$id': typeof AuthenticatedRecetasIdRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/recetas/': typeof AuthenticatedRecetasIndexRoute
+  '/_authenticated/admin/recetas/$id': typeof AuthenticatedAdminRecetasIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -112,12 +139,15 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/admin'
     | '/compras'
     | '/favoritos'
     | '/perfil'
     | '/plan'
     | '/recetas/$id'
+    | '/admin/'
     | '/recetas/'
+    | '/admin/recetas/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -128,19 +158,24 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/plan'
     | '/recetas/$id'
+    | '/admin'
     | '/recetas'
+    | '/admin/recetas/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/admin'
     | '/_authenticated/compras'
     | '/_authenticated/favoritos'
     | '/_authenticated/perfil'
     | '/_authenticated/plan'
     | '/_authenticated/recetas/$id'
+    | '/_authenticated/admin/'
     | '/_authenticated/recetas/'
+    | '/_authenticated/admin/recetas/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -180,6 +215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/compras': {
       id: '/_authenticated/compras'
       path: '/compras'
@@ -208,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/recetas/': {
       id: '/_authenticated/recetas/'
       path: '/recetas'
@@ -222,10 +271,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRecetasIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/recetas/$id': {
+      id: '/_authenticated/admin/recetas/$id'
+      path: '/recetas/$id'
+      fullPath: '/admin/recetas/$id'
+      preLoaderRoute: typeof AuthenticatedAdminRecetasIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminRecetasIdRoute: typeof AuthenticatedAdminRecetasIdRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminRecetasIdRoute: AuthenticatedAdminRecetasIdRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedFavoritosRoute: typeof AuthenticatedFavoritosRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
@@ -235,6 +305,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedFavoritosRoute: AuthenticatedFavoritosRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
