@@ -48,7 +48,8 @@ export function parseCsv(text: string): string[][] {
   let field = "";
   let inQ = false;
   const t = text.replace(/^\uFEFF/, "");
-  const delim = (t.split("\n")[0].match(/;/g)?.length ?? 0) > (t.split("\n")[0].match(/,/g)?.length ?? 0) ? ";" : ",";
+  const first = t.split("\n")[0] ?? "";
+  const delim = (first.match(/;/g)?.length ?? 0) > (first.match(/,/g)?.length ?? 0) ? ";" : ",";
   for (let i = 0; i < t.length; i++) {
     const c = t[i];
     if (inQ) {

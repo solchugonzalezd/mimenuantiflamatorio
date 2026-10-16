@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { CalendarDays, BookOpen, ShoppingBasket, Heart, Settings2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -20,48 +22,22 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { session, loading, hasAccess } = useAuth();
-  if (loading) return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Cargando…</div>;
-  if (!session) return <Landing />;
+  const { session, loading } = useAuth();
+  useEffect(() => {
+    if (!loading && !session) supabase.auth.signInAnonymously();
+  }, [loading, session]);
+  if (loading || !session) return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Cargando…</div>;
   return (
     <AppShell>
-      {hasAccess ? (
-        <Home />
-      ) : (
-        <div className="card-soft mx-auto max-w-lg p-8 text-center">
-          <h1 className="text-2xl">Tu cuenta todavía no tiene acceso</h1>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Cuando se confirme tu compra vas a poder usar las recetas y el planificador. Si ya compraste, escribinos y lo habilitamos.
-          </p>
-        </div>
-      )}
+      <Home />
     </AppShell>
   );
 }
 
-function Landing() {
-  return (
-    <div className="relative min-h-screen overflow-hidden">
-      <img src={hero} alt="Platos antiinflamatorios" className="absolute inset-0 h-full w-full object-cover" width={1600} height={1008} />
-      <div className="absolute inset-0 bg-background/70" />
-      <div className="relative mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 text-center">
-        <p className="text-sm uppercase tracking-[0.25em] text-muted-foreground">Método Menú</p>
-        <h1 className="mt-2 text-5xl text-primary md:text-6xl">Antiinflamatorio</h1>
-        <p className="mt-5 max-w-xl text-lg text-foreground">Dejá de improvisar qué cocinar. Armá tu semana según tu tiempo, con su lista de compras.</p>
-        <Button asChild variant="hero" size="lg" className="mt-8">
-          <Link to="/auth">Ingresar</Link>
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 function Home() {
-  const { session } = useAuth();
   const plan = useCurrentPlan();
   const prefs = usePrefs();
   const recipes = useRecipes();
-  const name = (session?.user.user_metadata?.display_name as string) || session?.user.email?.split("@")[0];
   const todayIdx = (new Date().getDay() + 6) % 7;
   const byId = new Map((recipes.data ?? []).map((r) => [r.id, r]));
   const todayItems = (plan.data?.meal_plan_items ?? [])
@@ -71,8 +47,9 @@ function Home() {
   return (
     <div className="space-y-8">
       <section className="card-soft overflow-hidden md:grid md:grid-cols-[1.2fr_1fr]">
+        <img src={hero} alt="Platos antiinflamatorios" className="h-44 w-full object-cover md:hidden" width={1600} height={1008} />
         <div className="p-6 md:p-10">
-          <p className="text-sm text-muted-foreground">¡Hola, {name}!</p>
+          <p className="text-sm text-muted-foreground">¡Hola! Bienvenida</p>
           <h1 className="mt-1 text-3xl md:text-4xl">¿Qué comemos esta semana?</h1>
           <p className="mt-3 text-muted-foreground">Elegimos recetas según tu tiempo y tus preferencias. Vos solo cocinás.</p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -101,7 +78,7 @@ function Home() {
 
       {plan.data && (
         <section>
-          <h2 className="text-2xl">Hoy, {DAY_LABELS[todayIdx].toLowerCase()}</h2>
+          <h2 className="text-2xl">Hoy, {DAY_LABELS[todayIdx]!.toLowerCase()}</h2>
           {todayItems.length === 0 ? (
             <p className="mt-2 text-sm text-muted-foreground">No hay comidas planificadas para hoy.</p>
           ) : (

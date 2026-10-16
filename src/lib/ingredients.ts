@@ -31,7 +31,7 @@ export type ParsedIngredient = {
 function parseQuantity(tok: string): number | null {
   if (FRACTIONS[tok] !== undefined) return FRACTIONS[tok];
   const mixed = tok.match(/^(\d+)([½¼¾⅓⅔⅛])$/);
-  if (mixed) return Number(mixed[1]) + FRACTIONS[mixed[2]];
+  if (mixed) return Number(mixed[1]) + (FRACTIONS[mixed[2]!] ?? 0);
   const frac = tok.match(/^(\d+)\/(\d+)$/);
   if (frac) return Number(frac[1]) / Number(frac[2]);
   const num = tok.replace(",", ".");
@@ -62,7 +62,7 @@ export function parseIngredientLine(line: string): ParsedIngredient {
   }
   let unit: string | null = null;
   if (quantity !== null && tokens[i]) {
-    const u = UNIT_MAP[tokens[i].toLowerCase()];
+    const u = UNIT_MAP[tokens[i]!.toLowerCase()];
     if (u) {
       unit = u;
       i++;

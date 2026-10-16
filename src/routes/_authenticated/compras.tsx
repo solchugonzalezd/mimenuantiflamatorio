@@ -87,7 +87,7 @@ function ComprasPage() {
     const { error } = isChecked
       ? await supabase.from("shopping_checks").delete().eq("plan_id", planId!).eq("item_key", key)
       : await supabase.from("shopping_checks").insert({ plan_id: planId!, item_key: key, user_id: uid! });
-    if (error) return toast.error("No pudimos guardar el cambio");
+    if (error) { toast.error("No pudimos guardar el cambio"); return; }
     checks.refetch();
   }
 

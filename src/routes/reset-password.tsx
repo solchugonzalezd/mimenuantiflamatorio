@@ -27,7 +27,7 @@ function ResetPage() {
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
-    if (error) return toast.error("El enlace venció o no es válido. Pedí uno nuevo.");
+    if (error) { toast.error("El enlace venció o no es válido. Pedí uno nuevo."); return; }
     toast.success("Contraseña actualizada");
     navigate({ to: "/" });
   }

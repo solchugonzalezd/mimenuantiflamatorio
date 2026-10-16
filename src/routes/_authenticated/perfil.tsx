@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -83,7 +83,7 @@ function Perfil() {
   }, [search, ingredients.data, avoid]);
 
   async function save() {
-    if (meals.length === 0) return toast.error("Elegí al menos una comida para planificar");
+    if (meals.length === 0) { toast.error("Elegí al menos una comida para planificar"); return; }
     const { error } = await supabase.from("user_preferences").upsert({
       user_id: uid!,
       cook_time: cookTime,
@@ -93,7 +93,7 @@ function Perfil() {
       avoid_ingredient_ids: avoid,
       updated_at: new Date().toISOString(),
     });
-    if (error) return toast.error("No pudimos guardar tus preferencias");
+    if (error) { toast.error("No pudimos guardar tus preferencias"); return; }
     toast.success("Preferencias guardadas");
     invalidate("prefs");
     if (hasAccess) navigate({ to: "/plan" });
@@ -103,7 +103,7 @@ function Perfil() {
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
         <h1 className="text-3xl md:text-4xl">Mis preferencias</h1>
-        <p className="mt-1 text-muted-foreground">Con esto armamos tu semana. Podés cambiarlo cuando quieras. ({session?.user.email})</p>
+        <p className="mt-1 text-muted-foreground">Con esto armamos tu semana. Podés cambiarlo cuando quieras.</p>
       </div>
 
       <section className="space-y-3">
@@ -169,6 +169,9 @@ function Perfil() {
       )}
 
       <Button size="lg" variant="hero" className="w-full" onClick={save}>Guardar preferencias</Button>
+      <p className="text-center text-xs text-muted-foreground">
+        Tus datos se guardan en este dispositivo. {session?.user.is_anonymous && <Link to="/auth" className="underline">Acceso administración</Link>}
+      </p>
     </div>
   );
 }

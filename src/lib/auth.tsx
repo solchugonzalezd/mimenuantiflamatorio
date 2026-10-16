@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         roles,
         isAdmin,
-        hasAccess: isAdmin || roles.includes("member"),
+        hasAccess: !!session,
         refreshRoles: () => loadRoles(session?.user.id),
       }}
     >

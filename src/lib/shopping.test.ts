@@ -9,7 +9,7 @@ describe("lista de compras", () => {
       { recipe_id: "b", ingredient_id: "tofu", ingredient_name: "tofu", raw_text: "1 kg de tofu", quantity: 1, unit: "kg" },
     ]);
     expect(list).toHaveLength(1);
-    expect(list[0].quantity).toBe(1150);
+    expect(list[0]?.quantity).toBe(1150);
   });
   it("mantiene separadas unidades no comparables", () => {
     const list = buildShoppingList([
