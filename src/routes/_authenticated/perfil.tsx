@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
-import { useDietOptions, useInvalidate, usePrefs, useUid } from "@/lib/queries";
+import { useInvalidate, usePrefs, useUid } from "@/lib/queries";
 import { MEAL_LABELS, MEAL_ORDER, type CookTime, type MealType } from "@/lib/planner";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
@@ -45,12 +45,9 @@ function Perfil() {
   const uid = useUid();
   const { hasAccess, session } = useAuth();
   const prefs = usePrefs();
-  const diets = useDietOptions();
   const invalidate = useInvalidate();
   const navigate = useNavigate();
   const [cookTime, setCookTime] = useState<CookTime>("hasta_20");
-  const [diet, setDiet] = useState("variada");
-  const [dietOther, setDietOther] = useState("");
   const [meals, setMeals] = useState<MealType[]>(["almuerzo", "cena"]);
   const [avoid, setAvoid] = useState<string[]>([]);
   const [search, setSearch] = useState("");
@@ -68,8 +65,6 @@ function Perfil() {
   useEffect(() => {
     if (prefs.data) {
       setCookTime(prefs.data.cook_time);
-      setDiet(prefs.data.diet);
-      setDietOther(prefs.data.diet_other ?? "");
       setMeals(prefs.data.meals);
       setAvoid(prefs.data.avoid_ingredient_ids);
     }
@@ -87,8 +82,8 @@ function Perfil() {
     const { error } = await supabase.from("user_preferences").upsert({
       user_id: uid!,
       cook_time: cookTime,
-      diet,
-      diet_other: diet === "otra" ? dietOther : null,
+      diet: prefs.data?.diet ?? "variada",
+      diet_other: prefs.data?.diet_other ?? null,
       meals,
       avoid_ingredient_ids: avoid,
       updated_at: new Date().toISOString(),
@@ -116,18 +111,6 @@ function Perfil() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-xl">¿Cómo te alimentás?</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {(diets.data ?? []).map((d) => (
-            <Option key={d.slug} active={diet === d.slug} onClick={() => setDiet(d.slug)} title={d.name} />
-          ))}
-        </div>
-        {diet === "otra" && (
-          <Input placeholder="Contanos cuál (por ahora se planifica como alimentación variada)" value={dietOther} onChange={(e) => setDietOther(e.target.value)} />
-        )}
-      </section>
-
-      <section className="space-y-3">
         <h2 className="text-xl">¿Qué comidas querés organizar?</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {MEAL_ORDER.map((m) => (
@@ -145,7 +128,7 @@ function Perfil() {
         <section className="space-y-3">
           <h2 className="text-xl">Ingredientes que preferís evitar</h2>
           <p className="text-sm text-muted-foreground">
-            Solo vamos a sugerirte recetas en las que podamos confirmar que no los llevan.
+            Vamos a evitar las recetas que sabemos que los llevan.
           </p>
           <div className="flex flex-wrap gap-2">
             {avoid.map((id) => (
