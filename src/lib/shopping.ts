@@ -1,3 +1,4 @@
+import { formatQuantity } from "./ingredients";
 // Lista de compras derivada de la planificación.
 // Solo se suman cantidades del mismo ingrediente (identificado en la base) con unidades comparables.
 
@@ -76,6 +77,6 @@ export function formatAmount(q: number | null, unit: string | null): string {
   if (q === null) return "";
   if (unit === "g" && q >= 1000) return `${(q / 1000).toString().replace(".", ",")} kg`;
   if (unit === "ml" && q >= 1000) return `${(q / 1000).toString().replace(".", ",")} l`;
-  const n = Number.isInteger(q) ? String(q) : q.toFixed(2).replace(/\.?0+$/, "").replace(".", ",");
+  const n = unit === "g" || unit === "ml" ? String(Math.round(q)) : formatQuantity(q);
   return unit && unit !== "u" ? `${n} ${unit}` : n;
 }
