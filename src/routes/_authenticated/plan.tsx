@@ -9,6 +9,7 @@ import { EmptyState, timeLabel } from "@/components/recipe-bits";
 import { useCurrentPlan, useInvalidate, usePlannerRecipes, usePrefs, useRecipes, useUid } from "@/lib/queries";
 import { DAY_LABELS, MEAL_LABELS, MEAL_ORDER, generatePlan, replacementOptions, compatibleFor, MIN_RECIPES_PER_MEAL, type MealType, type PlanItem } from "@/lib/planner";
 import { mondayOf } from "@/lib/data";
+import { Onboarding } from "@/components/onboarding";
 
 export const Route = createFileRoute("/_authenticated/plan")({
   head: () => ({
@@ -33,14 +34,7 @@ function PlanPage() {
   const [replacing, setReplacing] = useState<{ id: string; meal: MealType; day: number } | null>(null);
 
   if (prefs.isLoading || plan.isLoading) return <p className="text-muted-foreground">Cargando…</p>;
-  if (!prefs.data) {
-    return (
-      <EmptyState title="Primero, tus preferencias">
-        Contanos cuánto tiempo tenés y qué comidas querés organizar.
-        <div className="mt-4"><Button asChild><Link to="/perfil">Configurar preferencias</Link></Button></div>
-      </EmptyState>
-    );
-  }
+  if (!prefs.data) return <Onboarding />;
   const p = prefs.data;
   const byId = new Map((recipes.data ?? []).map((r) => [r.id, r]));
   const items = (plan.data?.meal_plan_items ?? []) as (PlanItem & { id: string })[];

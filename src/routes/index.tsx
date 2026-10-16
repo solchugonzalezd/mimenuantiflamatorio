@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useCurrentPlan, usePrefs, useRecipes } from "@/lib/queries";
 import { DAY_LABELS, MEAL_LABELS, MEAL_ORDER, type MealType } from "@/lib/planner";
 import hero from "@/assets/hero.jpg";
+import { Onboarding } from "@/components/onboarding";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,6 +47,16 @@ function Home() {
 
   return (
     <div className="space-y-8">
+      {!prefs.isLoading && prefs.isFetched && !prefs.data && <Onboarding />}
+      {prefs.data && (
+        <Link to="/perfil" className="card-soft flex items-center justify-between gap-3 p-4 text-sm hover:bg-accent">
+          <span>
+            <span className="text-muted-foreground">Tus preferencias: </span>
+            {prefs.data.cook_time === "hasta_20" ? "hasta 20 min" : prefs.data.cook_time === "20_40" ? "20 a 40 min" : "más de 40 min"} · {prefs.data.meals.map((m) => MEAL_LABELS[m as MealType].toLowerCase()).join(", ")}
+          </span>
+          <span className="inline-flex items-center gap-1 text-primary"><Settings2 className="h-4 w-4" /> Editar</span>
+        </Link>
+      )}
       <section className="card-soft overflow-hidden md:grid md:grid-cols-[1.2fr_1fr]">
         <img src={hero} alt="Platos antiinflamatorios" className="h-44 w-full object-cover md:hidden" width={1600} height={1008} />
         <div className="p-6 md:p-10">
