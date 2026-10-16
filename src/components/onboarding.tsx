@@ -75,12 +75,11 @@ export function Onboarding() {
               ))}
             </div>
           )}
-          {step === 2 && (diets.data ?? []).filter((d) => d.slug !== "otra").map((d) => <Opt key={d.slug} active={diet === d.slug} onClick={() => setDiet(d.slug)} title={d.name} />)}
         </div>
         <div className="flex justify-between gap-2 pt-2">
           <Button variant="ghost" onClick={() => setStep((s) => s - 1)} disabled={step === 0 || busy}>Atrás</Button>
-          {step < 2 ? (
-            <Button onClick={() => (step === 1 && meals.length === 0 ? toast.error("Elegí al menos una comida") : setStep((s) => s + 1))}>Siguiente</Button>
+          {step < 1 ? (
+            <Button onClick={() => setStep((s) => s + 1)}>Siguiente</Button>
           ) : (
             <Button variant="hero" onClick={finish} disabled={busy}>{busy ? "Armando tu semana…" : "Armar mi semana"}</Button>
           )}
