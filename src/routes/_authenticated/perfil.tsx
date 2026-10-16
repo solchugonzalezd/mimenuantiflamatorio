@@ -49,8 +49,6 @@ function Perfil() {
   const invalidate = useInvalidate();
   const navigate = useNavigate();
   const [cookTime, setCookTime] = useState<CookTime>("hasta_20");
-  const [diet, setDiet] = useState("variada");
-  const [dietOther, setDietOther] = useState("");
   const [meals, setMeals] = useState<MealType[]>(["almuerzo", "cena"]);
   const [avoid, setAvoid] = useState<string[]>([]);
   const [search, setSearch] = useState("");
@@ -68,8 +66,6 @@ function Perfil() {
   useEffect(() => {
     if (prefs.data) {
       setCookTime(prefs.data.cook_time);
-      setDiet(prefs.data.diet);
-      setDietOther(prefs.data.diet_other ?? "");
       setMeals(prefs.data.meals);
       setAvoid(prefs.data.avoid_ingredient_ids);
     }
@@ -87,8 +83,8 @@ function Perfil() {
     const { error } = await supabase.from("user_preferences").upsert({
       user_id: uid!,
       cook_time: cookTime,
-      diet,
-      diet_other: diet === "otra" ? dietOther : null,
+      diet: prefs.data?.diet ?? "variada",
+      diet_other: prefs.data?.diet_other ?? null,
       meals,
       avoid_ingredient_ids: avoid,
       updated_at: new Date().toISOString(),
@@ -113,18 +109,6 @@ function Perfil() {
             <Option key={t.v} active={cookTime === t.v} onClick={() => setCookTime(t.v)} title={t.l} desc={t.d} />
           ))}
         </div>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-xl">¿Cómo te alimentás?</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {(diets.data ?? []).map((d) => (
-            <Option key={d.slug} active={diet === d.slug} onClick={() => setDiet(d.slug)} title={d.name} />
-          ))}
-        </div>
-        {diet === "otra" && (
-          <Input placeholder="Contanos cuál (por ahora se planifica como alimentación variada)" value={dietOther} onChange={(e) => setDietOther(e.target.value)} />
-        )}
       </section>
 
       <section className="space-y-3">
