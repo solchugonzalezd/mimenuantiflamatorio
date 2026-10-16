@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { useDietOptions, useInvalidate, useUid } from "@/lib/queries";
+import { useInvalidate, useUid } from "@/lib/queries";
 import { fetchPlannerRecipes, mondayOf } from "@/lib/data";
 import { generatePlan, MEAL_LABELS, MEAL_ORDER, type CookTime, type MealType } from "@/lib/planner";
 
@@ -34,6 +34,7 @@ export function Onboarding() {
 
   async function finish() {
     if (!uid) return;
+    if (meals.length === 0) { toast.error("Elegí al menos una comida"); return; }
     setBusy(true);
     try {
       const prefs = { user_id: uid, cook_time: cookTime, diet: "variada", diet_other: null, meals, avoid_ingredient_ids: [] as string[], updated_at: new Date().toISOString() };
