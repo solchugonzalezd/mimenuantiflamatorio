@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCategories } from "@/lib/queries";
+import { AiPhotosPanel } from "@/components/ai-photos-panel";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   component: AdminRecipes,
@@ -56,6 +57,7 @@ function AdminRecipes() {
 
   return (
     <div className="space-y-4">
+      <AiPhotosPanel />
       <div className="grid grid-cols-3 gap-3">
         <Stat n={total} l="Recetas cargadas" />
         <Stat n={published} l="Publicadas" />
