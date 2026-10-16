@@ -13,8 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedFavoritosRouteImport } from './routes/_authenticated/favoritos'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
 import { Route as AuthenticatedRecetasIndexRouteImport } from './routes/_authenticated/recetas.index'
 import { Route as AuthenticatedRecetasIdRouteImport } from './routes/_authenticated/recetas.$id'
 
@@ -37,6 +39,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedComprasRoute = AuthenticatedComprasRouteImport.update({
+  id: '/compras',
+  path: '/compras',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedFavoritosRoute = AuthenticatedFavoritosRouteImport.update({
   id: '/favoritos',
   path: '/favoritos',
@@ -45,6 +52,11 @@ const AuthenticatedFavoritosRoute = AuthenticatedFavoritosRouteImport.update({
 const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPlanRoute = AuthenticatedPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRecetasIndexRoute =
@@ -63,8 +75,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/compras': typeof AuthenticatedComprasRoute
   '/favoritos': typeof AuthenticatedFavoritosRoute
   '/perfil': typeof AuthenticatedPerfilRoute
+  '/plan': typeof AuthenticatedPlanRoute
   '/recetas/$id': typeof AuthenticatedRecetasIdRoute
   '/recetas/': typeof AuthenticatedRecetasIndexRoute
 }
@@ -72,8 +86,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/compras': typeof AuthenticatedComprasRoute
   '/favoritos': typeof AuthenticatedFavoritosRoute
   '/perfil': typeof AuthenticatedPerfilRoute
+  '/plan': typeof AuthenticatedPlanRoute
   '/recetas/$id': typeof AuthenticatedRecetasIdRoute
   '/recetas': typeof AuthenticatedRecetasIndexRoute
 }
@@ -83,8 +99,10 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/favoritos': typeof AuthenticatedFavoritosRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
+  '/_authenticated/plan': typeof AuthenticatedPlanRoute
   '/_authenticated/recetas/$id': typeof AuthenticatedRecetasIdRoute
   '/_authenticated/recetas/': typeof AuthenticatedRecetasIndexRoute
 }
@@ -94,8 +112,10 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/compras'
     | '/favoritos'
     | '/perfil'
+    | '/plan'
     | '/recetas/$id'
     | '/recetas/'
   fileRoutesByTo: FileRoutesByTo
@@ -103,8 +123,10 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/compras'
     | '/favoritos'
     | '/perfil'
+    | '/plan'
     | '/recetas/$id'
     | '/recetas'
   id:
@@ -113,8 +135,10 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/compras'
     | '/_authenticated/favoritos'
     | '/_authenticated/perfil'
+    | '/_authenticated/plan'
     | '/_authenticated/recetas/$id'
     | '/_authenticated/recetas/'
   fileRoutesById: FileRoutesById
@@ -156,6 +180,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/compras': {
+      id: '/_authenticated/compras'
+      path: '/compras'
+      fullPath: '/compras'
+      preLoaderRoute: typeof AuthenticatedComprasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/favoritos': {
       id: '/_authenticated/favoritos'
       path: '/favoritos'
@@ -168,6 +199,13 @@ declare module '@tanstack/react-router' {
       path: '/perfil'
       fullPath: '/perfil'
       preLoaderRoute: typeof AuthenticatedPerfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/plan': {
+      id: '/_authenticated/plan'
+      path: '/plan'
+      fullPath: '/plan'
+      preLoaderRoute: typeof AuthenticatedPlanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/recetas/': {
@@ -188,15 +226,19 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedFavoritosRoute: typeof AuthenticatedFavoritosRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
+  AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
   AuthenticatedRecetasIdRoute: typeof AuthenticatedRecetasIdRoute
   AuthenticatedRecetasIndexRoute: typeof AuthenticatedRecetasIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedFavoritosRoute: AuthenticatedFavoritosRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
+  AuthenticatedPlanRoute: AuthenticatedPlanRoute,
   AuthenticatedRecetasIdRoute: AuthenticatedRecetasIdRoute,
   AuthenticatedRecetasIndexRoute: AuthenticatedRecetasIndexRoute,
 }
