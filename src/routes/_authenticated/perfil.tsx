@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
-import { useDietOptions, useInvalidate, usePrefs, useUid } from "@/lib/queries";
+import { useInvalidate, usePrefs, useUid } from "@/lib/queries";
 import { MEAL_LABELS, MEAL_ORDER, type CookTime, type MealType } from "@/lib/planner";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
@@ -45,7 +45,6 @@ function Perfil() {
   const uid = useUid();
   const { hasAccess, session } = useAuth();
   const prefs = usePrefs();
-  const diets = useDietOptions();
   const invalidate = useInvalidate();
   const navigate = useNavigate();
   const [cookTime, setCookTime] = useState<CookTime>("hasta_20");
@@ -129,7 +128,7 @@ function Perfil() {
         <section className="space-y-3">
           <h2 className="text-xl">Ingredientes que preferís evitar</h2>
           <p className="text-sm text-muted-foreground">
-            Solo vamos a sugerirte recetas en las que podamos confirmar que no los llevan.
+            Vamos a evitar las recetas que sabemos que los llevan.
           </p>
           <div className="flex flex-wrap gap-2">
             {avoid.map((id) => (
