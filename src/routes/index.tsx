@@ -78,7 +78,7 @@ function Home() {
 
       {plan.data && (
         <section>
-          <h2 className="text-2xl">Hoy, {DAY_LABELS[todayIdx].toLowerCase()}</h2>
+          <h2 className="text-2xl">Hoy, {DAY_LABELS[todayIdx]!.toLowerCase()}</h2>
           {todayItems.length === 0 ? (
             <p className="mt-2 text-sm text-muted-foreground">No hay comidas planificadas para hoy.</p>
           ) : (

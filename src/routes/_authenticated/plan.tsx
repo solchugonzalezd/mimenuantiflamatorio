@@ -76,7 +76,7 @@ function PlanPage() {
   async function replaceWith(recipeId: string) {
     if (!replacing) return;
     const { error } = await supabase.from("meal_plan_items").update({ recipe_id: recipeId }).eq("id", replacing.id);
-    if (error) return toast.error("No pudimos reemplazarla");
+    if (error) { toast.error("No pudimos reemplazarla"); return; }
     setReplacing(null);
     invalidate("plan");
   }
@@ -162,7 +162,7 @@ function PlanPage() {
         <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Reemplazar {replacing ? `${MEAL_LABELS[replacing.meal].toLowerCase()} del ${DAY_LABELS[replacing.day].toLowerCase()}` : ""}
+              Reemplazar {replacing ? `${MEAL_LABELS[replacing.meal].toLowerCase()} del ${DAY_LABELS[replacing.day]!.toLowerCase()}` : ""}
             </DialogTitle>
           </DialogHeader>
           {options.length === 0 ? (

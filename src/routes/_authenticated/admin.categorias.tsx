@@ -21,20 +21,20 @@ function CatsPage() {
     if (!name.trim()) return;
     const slug = ingredientKey(name).replace(/ /g, "-");
     const { error } = await supabase.from("categories").insert({ name: name.trim(), slug, sort_order: (cats.data?.length ?? 0) + 1 });
-    if (error) return toast.error("No se pudo crear (¿ya existe?)");
+    if (error) { toast.error("No se pudo crear (¿ya existe?)"); return; }
     setName("");
     invalidate("categories");
   }
   async function rename(id: string) {
     const { error } = await supabase.from("categories").update({ name: edits[id] }).eq("id", id);
-    if (error) return toast.error("No se pudo guardar");
+    if (error) { toast.error("No se pudo guardar"); return; }
     toast.success("Guardado");
     invalidate("categories");
   }
   async function remove(id: string) {
     if (!confirm("¿Eliminar la categoría? Sus recetas quedan sin categoría.")) return;
     const { error } = await supabase.from("categories").delete().eq("id", id);
-    if (error) return toast.error("No se pudo eliminar");
+    if (error) { toast.error("No se pudo eliminar"); return; }
     invalidate("categories");
   }
 

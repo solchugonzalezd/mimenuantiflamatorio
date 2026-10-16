@@ -26,7 +26,7 @@ function UsersPage() {
     const { error } = on
       ? await supabase.from("user_roles").insert({ user_id: id, role: "admin" })
       : await supabase.from("user_roles").delete().eq("user_id", id).eq("role", "admin");
-    if (error) return toast.error("No se pudo cambiar el permiso");
+    if (error) { toast.error("No se pudo cambiar el permiso"); return; }
     q.refetch();
   }
 

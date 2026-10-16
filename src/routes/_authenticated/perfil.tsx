@@ -83,7 +83,7 @@ function Perfil() {
   }, [search, ingredients.data, avoid]);
 
   async function save() {
-    if (meals.length === 0) return toast.error("Elegí al menos una comida para planificar");
+    if (meals.length === 0) { toast.error("Elegí al menos una comida para planificar"); return; }
     const { error } = await supabase.from("user_preferences").upsert({
       user_id: uid!,
       cook_time: cookTime,
@@ -93,7 +93,7 @@ function Perfil() {
       avoid_ingredient_ids: avoid,
       updated_at: new Date().toISOString(),
     });
-    if (error) return toast.error("No pudimos guardar tus preferencias");
+    if (error) { toast.error("No pudimos guardar tus preferencias"); return; }
     toast.success("Preferencias guardadas");
     invalidate("prefs");
     if (hasAccess) navigate({ to: "/plan" });

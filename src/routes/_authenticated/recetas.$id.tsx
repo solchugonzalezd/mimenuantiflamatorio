@@ -58,8 +58,8 @@ function RecipeDetail() {
     const [day, meal] = slot.split("|");
     const { error } = await supabase
       .from("meal_plan_items")
-      .upsert({ plan_id: plan.data.id, day_index: Number(day), meal_type: meal, recipe_id: r!.id }, { onConflict: "plan_id,day_index,meal_type" });
-    if (error) return toast.error("No pudimos agregarla");
+      .upsert({ plan_id: plan.data.id, day_index: Number(day), meal_type: meal!, recipe_id: r!.id }, { onConflict: "plan_id,day_index,meal_type" });
+    if (error) { toast.error("No pudimos agregarla"); return; }
     toast.success("Agregada a tu semana");
     invalidate("plan");
   }

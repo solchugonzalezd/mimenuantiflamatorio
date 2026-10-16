@@ -63,12 +63,12 @@ function EditRecipe() {
   async function upload(file: File) {
     const path = `${crypto.randomUUID()}-${file.name.replace(/[^a-z0-9.]/gi, "_")}`;
     const { error } = await supabase.storage.from("recipe-images").upload(path, file);
-    if (error) return toast.error("No se pudo subir la foto");
+    if (error) { toast.error("No se pudo subir la foto"); return; }
     set("image_url", path);
   }
 
   async function save() {
-    if (!f.name.trim()) return toast.error("El nombre es obligatorio");
+    if (!f.name.trim()) { toast.error("El nombre es obligatorio"); return; }
     setBusy(true);
     try {
       const slugById = new Map((cats.data ?? []).map((c) => [c.slug, c.id]));
@@ -98,7 +98,7 @@ function EditRecipe() {
   async function remove() {
     if (!confirm("¿Eliminar esta receta? Se quitará también de las planificaciones.")) return;
     const { error } = await supabase.from("recipes").delete().eq("id", id);
-    if (error) return toast.error("No se pudo eliminar");
+    if (error) { toast.error("No se pudo eliminar"); return; }
     invalidate("admin_recipes", "recipes", "planner_recipes");
     navigate({ to: "/admin" });
   }

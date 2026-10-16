@@ -20,7 +20,7 @@ export const CATEGORY_IMAGES: Record<string, string> = {
   "salsas-aderezos": salsas,
 };
 
-export function RecipeImage({ path, fallback, alt, className }: { path: string | null; fallback?: string; alt: string; className?: string }) {
+export function RecipeImage({ path, fallback, alt, className }: { path: string | null; fallback?: string | undefined; alt: string; className?: string | undefined }) {
   const [src, setSrc] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
@@ -50,9 +50,9 @@ export function RecipeCard({
   onToggleFav,
 }: {
   recipe: RecipeRow;
-  categorySlug?: string;
-  isFav?: boolean;
-  onToggleFav?: () => void;
+  categorySlug?: string | undefined;
+  isFav?: boolean | undefined;
+  onToggleFav?: (() => void) | undefined;
 }) {
   return (
     <div className="card-soft group relative overflow-hidden">
