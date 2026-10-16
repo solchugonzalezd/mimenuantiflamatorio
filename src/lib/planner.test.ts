@@ -25,14 +25,15 @@ describe("reglas del planificador", () => {
     expect(whyIneligible({ ...base, prep_minutes: 40 }, p)).toBeNull();
     expect(whyIneligible({ ...base, prep_minutes: 41 }, p)).toBe("tiempo");
   });
-  it("vegetariana solo incluye recetas confirmadas como vegetarianas", () => {
+  it("vegetariana excluye solo recetas etiquetadas como no vegetarianas", () => {
     const p = { ...prefs, diet: "vegetariana" };
-    expect(whyIneligible(base, p)).toBe("preferencia");
+    expect(whyIneligible(base, p)).toBeNull();
+    expect(whyIneligible({ ...base, diet_tags: ["con_carne"] }, p)).toBe("preferencia");
     expect(whyIneligible({ ...base, diet_tags: ["vegetariana"] }, p)).toBeNull();
   });
-  it("con ingredientes a evitar, excluye recetas con ingredientes sin verificar", () => {
+  it("con ingredientes a evitar, excluye solo recetas verificadas que los contienen", () => {
     const p = { ...prefs, avoid_ingredient_ids: ["i9"] };
-    expect(whyIneligible({ ...base, ingredients_verified: false }, p)).toBe("ingredientes_sin_verificar");
+    expect(whyIneligible({ ...base, ingredients_verified: false, ingredient_ids: ["i9"] }, p)).toBeNull();
     expect(whyIneligible({ ...base, ingredient_ids: ["i9"] }, p)).toBe("ingrediente_evitado");
   });
   it("solo planifica las comidas elegidas y no repite si hay 7 o más recetas", () => {
