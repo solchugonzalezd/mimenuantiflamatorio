@@ -38,9 +38,9 @@ function ImportPage() {
     setProgress(0);
     for (let i = 0; i < valid.length; i++) {
       try {
-        await saveRecipe(valid[i].draft!, slugMap);
+        await saveRecipe(valid[i]!.draft!, slugMap);
       } catch (e) {
-        fails.push(`Fila ${valid[i].row}: ${e instanceof Error ? e.message : "error"}`);
+        fails.push(`Fila ${valid[i]!.row}: ${e instanceof Error ? e.message : "error"}`);
       }
       setProgress(Math.round(((i + 1) / valid.length) * 100));
     }

@@ -26,7 +26,7 @@ function CatsPage() {
     invalidate("categories");
   }
   async function rename(id: string) {
-    const { error } = await supabase.from("categories").update({ name: edits[id] }).eq("id", id);
+    const { error } = await supabase.from("categories").update({ name: edits[id] ?? "" }).eq("id", id);
     if (error) { toast.error("No se pudo guardar"); return; }
     toast.success("Guardado");
     invalidate("categories");
