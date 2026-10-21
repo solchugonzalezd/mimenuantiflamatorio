@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { RefreshCw, Shuffle, AlertTriangle, ShoppingBasket } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EmptyState, timeLabel } from "@/components/recipe-bits";
 import { useCurrentPlan, useInvalidate, usePlannerRecipes, usePrefs, useRecipes, useUid } from "@/lib/queries";
-import { DAY_LABELS, MEAL_LABELS, MEAL_ORDER, generatePlan, replacementOptions, compatibleFor, MIN_RECIPES_PER_MEAL, type MealType, type PlanItem } from "@/lib/planner";
-import { mondayOf } from "@/lib/data";
+import { DAY_LABELS, MEAL_LABELS, MEAL_ORDER, generatePlan, replacementOptions, compatibleFor, fillMissing, MIN_RECIPES_PER_MEAL, type MealType, type PlanItem } from "@/lib/planner";
+import { fetchPlannerRecipes, mondayOf } from "@/lib/data";
 import { Onboarding } from "@/components/onboarding";
 
 export const Route = createFileRoute("/_authenticated/plan")({
@@ -32,6 +32,28 @@ function PlanPage() {
   const invalidate = useInvalidate();
   const [busy, setBusy] = useState(false);
   const [replacing, setReplacing] = useState<{ id: string | null; meal: MealType; day: number } | null>(null);
+  const filling = useRef<string | null>(null);
+
+  // Completa solo los lugares vacíos de la semana guardada (p. ej. comidas sumadas después de generarla).
+  useEffect(() => {
+    const pd = plan.data;
+    if (!pd || !prefs.data || !pRecipes.data) return;
+    const its = (pd.meal_plan_items ?? []) as (PlanItem & { id: string })[];
+    const fills = fillMissing(pRecipes.data, prefs.data, its);
+    const key = `${pd.id}:${fills.map((f) => `${f.day_index}${f.meal_type}`).join(",")}`;
+    if (fills.length === 0 || filling.current === key) return;
+    filling.current = key;
+    (async () => {
+      for (const f of fills) {
+        const existing = its.find((i) => i.day_index === f.day_index && i.meal_type === f.meal_type);
+        const { error } = existing
+          ? await supabase.from("meal_plan_items").update({ recipe_id: f.recipe_id }).eq("id", existing.id)
+          : await supabase.from("meal_plan_items").insert({ ...f, plan_id: pd.id });
+        if (error) return;
+      }
+      invalidate("plan");
+    })();
+  }, [plan.data, prefs.data, pRecipes.data]);
 
   if (prefs.isLoading || plan.isLoading) return <p className="text-muted-foreground">Cargando…</p>;
   if (!prefs.data) return <Onboarding />;
@@ -47,7 +69,9 @@ function PlanPage() {
     if (!pRecipes.data) return;
     setBusy(true);
     try {
-      const result = generatePlan(pRecipes.data, p);
+      // Siempre con las recetas actualizadas de la base, no con datos viejos en memoria.
+      const fresh = await fetchPlannerRecipes();
+      const result = generatePlan(fresh, p);
       await supabase.from("meal_plans").update({ is_current: false }).eq("user_id", uid!).eq("is_current", true);
       const { data: newPlan, error } = await supabase
         .from("meal_plans")
