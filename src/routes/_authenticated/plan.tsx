@@ -31,7 +31,7 @@ function PlanPage() {
   const recipes = useRecipes();
   const invalidate = useInvalidate();
   const [busy, setBusy] = useState(false);
-  const [replacing, setReplacing] = useState<{ id: string; meal: MealType; day: number } | null>(null);
+  const [replacing, setReplacing] = useState<{ id: string | null; meal: MealType; day: number } | null>(null);
 
   if (prefs.isLoading || plan.isLoading) return <p className="text-muted-foreground">Cargando…</p>;
   if (!prefs.data) return <Onboarding />;
@@ -69,7 +69,9 @@ function PlanPage() {
 
   async function replaceWith(recipeId: string) {
     if (!replacing) return;
-    const { error } = await supabase.from("meal_plan_items").update({ recipe_id: recipeId }).eq("id", replacing.id);
+    const { error } = replacing.id
+      ? await supabase.from("meal_plan_items").update({ recipe_id: recipeId }).eq("id", replacing.id)
+      : await supabase.from("meal_plan_items").insert({ plan_id: plan.data!.id, day_index: replacing.day, meal_type: replacing.meal, recipe_id: recipeId });
     if (error) { toast.error("No pudimos reemplazarla"); return; }
     setReplacing(null);
     invalidate("plan");
@@ -127,7 +129,9 @@ function PlanPage() {
                   return (
                     <div key={m} className="rounded-xl bg-muted p-3">
                       <p className="text-xs uppercase tracking-wider text-muted-foreground">{MEAL_LABELS[m]}</p>
-                      {r ? (
+                      {it?.recipe_id && !r ? (
+                        <p className="mt-1 text-sm text-muted-foreground">Cargando…</p>
+                      ) : r ? (
                         <div className="mt-1 flex items-start justify-between gap-2">
                           <Link to="/recetas/$id" params={{ id: r.id }} className="font-medium hover:underline">{r.name}</Link>
                           {it && (
@@ -138,8 +142,8 @@ function PlanPage() {
                         </div>
                       ) : (
                         <p className="mt-1 text-sm text-muted-foreground">
-                          Sin receta compatible
-                          {it && <button className="ml-2 underline" onClick={() => setReplacing({ id: it.id, meal: m, day: di })}>elegir</button>}
+                          {compatibleFor(pRecipes.data ?? [], p, m).length > 0 ? "Sin receta asignada" : "Sin receta compatible"}
+                          <button className="ml-2 underline" onClick={() => setReplacing({ id: it?.id ?? null, meal: m, day: di })}>elegir</button>
                         </p>
                       )}
                       {r && <p className="mt-0.5 text-xs text-muted-foreground">{timeLabel(r)}</p>}
