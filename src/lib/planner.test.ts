@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generatePlan, whyIneligible, type PlannerPrefs, type PlannerRecipe } from "./planner";
+import { fillMissing, generatePlan, whyIneligible, type PlannerPrefs, type PlannerRecipe } from "./planner";
 
 const base: PlannerRecipe = {
   id: "x",
