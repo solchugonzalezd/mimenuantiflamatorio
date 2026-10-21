@@ -140,7 +140,7 @@ export function replacementOptions(recipes: PlannerRecipe[], prefs: PlannerPrefs
 export function fillMissing(recipes: PlannerRecipe[], prefs: PlannerPrefs, items: PlanItem[], seed = Date.now()) {
   const rand = rng(seed);
   const byId = new Map(recipes.map((r) => [r.id, r]));
-  const current = [...items];
+  const current = items.map((i) => ({ ...i }));
   const fills: PlanItem[] = [];
   for (const meal of MEAL_ORDER.filter((m) => prefs.meals.includes(m))) {
     const pool = shuffle(compatibleFor(recipes, prefs, meal), rand);
