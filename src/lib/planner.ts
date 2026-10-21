@@ -131,3 +131,36 @@ export function replacementOptions(recipes: PlannerRecipe[], prefs: PlannerPrefs
   const used = new Set(items.filter((i) => i.meal_type === meal).map((i) => i.recipe_id));
   return compatibleFor(recipes, prefs, meal).filter((r) => !used.has(r.id));
 }
+
+/**
+ * Completa automáticamente los lugares vacíos de una semana ya guardada
+ * (por ejemplo, si la usuaria sumó una comida después de generarla).
+ * Devuelve solo los lugares que se pudieron llenar con una receta compatible.
+ */
+export function fillMissing(recipes: PlannerRecipe[], prefs: PlannerPrefs, items: PlanItem[], seed = Date.now()) {
+  const rand = rng(seed);
+  const byId = new Map(recipes.map((r) => [r.id, r]));
+  const current = [...items];
+  const fills: PlanItem[] = [];
+  for (const meal of MEAL_ORDER.filter((m) => prefs.meals.includes(m))) {
+    const pool = shuffle(compatibleFor(recipes, prefs, meal), rand);
+    if (pool.length === 0) continue;
+    for (let day = 0; day < 7; day++) {
+      const slot = current.find((i) => i.day_index === day && i.meal_type === meal);
+      if (slot?.recipe_id) continue;
+      const usedMeal = new Set(current.filter((i) => i.meal_type === meal).map((i) => i.recipe_id));
+      const usedWeek = new Set(current.map((i) => i.recipe_id));
+      const fresh = pool.filter((r) => !usedWeek.has(r.id));
+      const notInMeal = pool.filter((r) => !usedMeal.has(r.id));
+      const candidates = fresh.length ? fresh : notInMeal.length ? notInMeal : pool;
+      const prevId = current.find((i) => i.day_index === day - 1 && i.meal_type === meal)?.recipe_id;
+      const prev = prevId ? byId.get(prevId) : undefined;
+      const pick = [...candidates].sort((a, b) => overlap(a, prev) - overlap(b, prev))[0]!;
+      const item: PlanItem = { day_index: day, meal_type: meal, recipe_id: pick.id };
+      fills.push(item);
+      if (slot) slot.recipe_id = pick.id;
+      else current.push(item);
+    }
+  }
+  return fills;
+}
